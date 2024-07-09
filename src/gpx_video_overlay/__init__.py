@@ -1,6 +1,3 @@
-from __future__ import annotations
-
-from ._version import get_versions
-
-__version__ = get_versions()["version"]
+from importlib.metadata import version
+__version__ = version("gpx_video_overlay")
 __all__ = ("__version__")
