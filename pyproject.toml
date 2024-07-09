@@ -47,4 +47,4 @@ tag_prefix = ""
 parentdir_prefix = "gpx_video_overlay-"
 
 [project.scripts]
-dask-dirac = "gpx_video_overlay.gpu:main"
+gpx-video-overlay = "gpx_video_overlay.gui:main"
