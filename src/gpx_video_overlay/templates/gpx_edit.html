@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPX Edit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.css">
+    <style>
+        #map-container, #elevation-container, #speed-container {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>GPX Edit</h1>
+    <form id="gpx-form">
+        <label for="gpx">Select GPX:</label>
+        <input type="file" id="gpx" name="gpx" accept=".gpx">
+        <button type="submit">Upload GPX</button>
+    </form>
+    <div id="map-container">
+        <iframe id="map" src="static/temp_map.html" width="600" height="400"></iframe>
+    </div>
+    <div id="elevation-container">
+        <iframe id="elevation" src="static/temp_elevation.html" width="600" height="400"></iframe>
+    </div>
+    <div id="speed-container">
+        <iframe id="speed" src="static/temp_speed.html" width="600" height="400"></iframe>
+    </div>
+    <div id="slider-container">
+        <div id="slider"></div>
+        <button id="confirm-button">Confirm</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js"></script>
+    <script>
+        document.getElementById('gpx-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            fetch('/upload_gpx', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                document.getElementById('map').src = 'static/temp_map.html';
+                document.getElementById('elevation').src = 'static/temp_elevation.html';
+                document.getElementById('speed').src = 'static/temp_speed.html';
+                initializeSlider(new Date(data.start_time).getTime(), new Date(data.end_time).getTime());
+            });
+        });
+
+        function initializeSlider(startTime, endTime) {
+            const slider = document.getElementById('slider');
+            noUiSlider.create(slider, {
+                start: [startTime, endTime],
+                connect: true,
+                range: {
+                    'min': startTime,
+                    'max': endTime
+                },
+                format: {
+                    to: value => new Date(value).toISOString(),
+                    from: value => new Date(value).getTime()
+                }
+            });
+
+            document.getElementById('confirm-button').addEventListener('click', function() {
+                const [start, end] = slider.noUiSlider.get();
+                fetch('/update_gpx', {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        gpx_path: document.getElementById('gpx').files[0].name,
+                        start_offset: (new Date(start).getTime() - startTime) / 1000,
+                        end_offset: (new Date(end).getTime() - startTime) / 1000
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    document.getElementById('map').src = 'static/temp_map.html';
+                    document.getElementById('elevation').src = 'static/temp_elevation.html';
+                    document.getElementById('speed').src = 'static/temp_speed.html';
+                });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -7,89 +7,21 @@
 </head>
 <body>
     <h1>GPX Video Overlay</h1>
-    <form id="video-form">
-        <label for="video">Select Video:</label>
-        <input type="file" id="video" name="video" accept="video/mp4">
-        <button type="submit">Upload Video</button>
-    </form>
-    <form id="gpx-form">
-        <label for="gpx">Select GPX:</label>
-        <input type="file" id="gpx" name="gpx" accept=".gpx">
-        <button type="submit">Upload GPX</button>
-    </form>
-    <div id="map-container">
-        <iframe id="map" src="static/temp_map.html" width="600" height="400"></iframe>
-    </div>
-    <form id="update-gpx-form">
-        <label for="start-offset">Start Offset:</label>
-        <input type="number" id="start-offset" name="start_offset">
-        <label for="end-offset">End Offset:</label>
-        <input type="number" id="end-offset" name="end_offset">
-        <button type="submit">Update GPX</button>
-    </form>
-    <form id="generate-video-form">
-        <button type="submit">Generate Video</button>
-    </form>
+    <button id="gpx-edit">GPX Edit</button>
+    <button id="mp4-edit">MP4 Edit</button>
+    <button id="both">Both</button>
+
     <script>
-        document.getElementById('video-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-            fetch('/upload_video', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            });
+        document.getElementById('gpx-edit').addEventListener('click', function() {
+            window.location.href = '/gpx_edit';
         });
 
-        document.getElementById('gpx-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-            fetch('/upload_gpx', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                document.getElementById('map').src = 'static/temp_map.html';
-            });
+        document.getElementById('mp4-edit').addEventListener('click', function() {
+            window.location.href = '/mp4_edit';
         });
 
-        document.getElementById('update-gpx-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-            fetch('/update_gpx', {
-                method: 'POST',
-                body: new URLSearchParams(new FormData(this))
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                document.getElementById('map').src = 'static/temp_map.html';
-            });
-        });
-
-        document.getElementById('generate-video-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-            fetch('/generate_video', {
-                method: 'POST',
-                body: new URLSearchParams(new FormData(this))
-            })
-            .then(response => response.blob())
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = 'output_video.mp4';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-            });
+        document.getElementById('both').addEventListener('click', function() {
+            alert('Both button clicked');
         });
     </script>
 </body>

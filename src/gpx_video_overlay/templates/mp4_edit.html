@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP4 Edit</title>
+</head>
+<body>
+    <h1>MP4 Edit</h1>
+    <form id="video-form">
+        <label for="video">Select Video:</label>
+        <input type="file" id="video" name="video" accept="video/mp4">
+        <button type="submit">Upload Video</button>
+    </form>
+    <script>
+        document.getElementById('video-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            fetch('/upload_video', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            });
+        });
+    </script>
+</body>
+</html>
